@@ -1,0 +1,6 @@
+.ruff_cache
+dist
+.env
+__pycache__
+.venv
+chroma_db
