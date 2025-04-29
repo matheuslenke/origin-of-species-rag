@@ -1,4 +1,6 @@
 from typing import AsyncIterator, Iterator
+
+from dotenv import load_dotenv
 from models.rag_agent import RagAgent
 from models.pre_retrieval_agent import PreRetrievalAgent
 from langchain.schema import Document
@@ -6,13 +8,26 @@ from core.database.vector_store import VectorStore
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda, RunnableParallel
 from langchain_core.output_parsers import StrOutputParser
 from asyncio import run as async_run
+import nltk
+
 class RagRunner:
     vector_store: VectorStore
 
-    def __init__(self, vector_store: VectorStore):
+    def __init__(self):
         self.rag_agent = RagAgent()
         self.pre_retrieval_agent = PreRetrievalAgent()
-        self.vector_store = vector_store
+        self.vector_store = self.prepare_vector_store()
+
+    async def prepare_vector_store() -> VectorStore:
+        # Load the environment variables
+        load_dotenv(verbose=True, override=True)
+
+        # Prepare the NLTK tokenizer
+        nltk.download('punkt_tab')
+
+        vector_store = VectorStore()
+        await vector_store.initialize()
+        return vector_store
 
     async def run(self, user_query: str) -> AsyncIterator[str]:
         # This chain is used to generate a response to a user's query
