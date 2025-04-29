@@ -80,7 +80,7 @@ class VectorStore:
     async def retrieve_similar_documents(self, user_prompt: str):
         # creating and invoking the retriever
 
-        docs: list[tuple[Document, float]] = await self.vector_store.asimilarity_search_with_score(user_prompt, k = 20)
+        docs: list[tuple[Document, float]] = await self.vector_store.asimilarity_search_with_score(user_prompt, k = 2)
 
         # docs = retriever.invoke(user_prompt)
         for doc, score in docs:
