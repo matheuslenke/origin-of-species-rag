@@ -5,6 +5,7 @@ from core.database.vector_store import VectorStore
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 
+
 class RagRunner:
     vector_store: VectorStore
 
@@ -16,22 +17,22 @@ class RagRunner:
         print("RagRunner started")
 
     def get_rag_chain(self):
-        return (
-            { "context": lambda x: x["documents"], "question": lambda x: x["original_query"]} |
-            self.rag_agent.get_chain()
-        )
+        return {
+            "context": lambda x: x["documents"],
+            "question": lambda x: x["original_query"],
+        } | self.rag_agent.get_chain()
 
     def get_full_rag_chain(self, rag_chain):
         return (
-            RunnablePassthrough() | 
-            {
+            RunnablePassthrough()
+            | {
                 "pre_retrieval_output": self.pre_retrieval_agent.get_chain(),
-                "original_query": RunnablePassthrough()
-            } |
-            RunnableLambda(self.run_documents_and_original_query)
+                "original_query": RunnablePassthrough(),
+            }
+            | RunnableLambda(self.run_documents_and_original_query)
             | rag_chain
         )
-    
+
     async def run(self, user_query: str) -> str:
         """
         The run method is the main method that will be called to run the RAG.
@@ -47,37 +48,49 @@ class RagRunner:
         full_rag_chain = self.get_full_rag_chain(rag_chain)
 
         return await full_rag_chain.ainvoke(user_query)
-    
-    async def run_documents_and_original_query(self, input_dict: dict) -> list[Document]:
+
+    async def run_documents_and_original_query(
+        self, input_dict: dict
+    ) -> list[Document]:
         pre_retrieval_output = input_dict["pre_retrieval_output"]
         original_query = input_dict["original_query"]
-        context_string: str = await self.generate_context(pre_retrieval_output, original_query)
+        context_string: str = await self.generate_context(
+            pre_retrieval_output, original_query
+        )
         return {"documents": context_string, "original_query": original_query}
 
-    async def generate_context(self, pre_retrieval_output: str, original_query: str) -> str:
+    async def generate_context(
+        self, pre_retrieval_output: str, original_query: str
+    ) -> str:
         """
         Takes the output of the pre-retrieval step and the original query to fetch context
         and returns it as a single formatted string.
         """
-        candidates = [item.strip() for item in pre_retrieval_output.split(',') if item.strip()]
+        candidates = [
+            item.strip() for item in pre_retrieval_output.split(",") if item.strip()
+        ]
         if not candidates and not original_query:
-             return "No query or candidates provided."
+            return "No query or candidates provided."
 
-        print(f'The candidates are: {str(candidates)}')
+        print(f"The candidates are: {str(candidates)}")
 
         # Retrieve the relevant documents based on the original query
-        relevant_documents = await self.vector_store.retrieve_similar_documents(original_query)
+        relevant_documents = await self.vector_store.retrieve_similar_documents(
+            original_query
+        )
         final_documents: list[Document] = []
         for document, score in relevant_documents:
             final_documents.append(document)
 
         # Retrieve the relevant documents based on the candidates
         for candidate in candidates:
-            relevant_documents = await self.vector_store.retrieve_similar_documents(candidate)
+            relevant_documents = await self.vector_store.retrieve_similar_documents(
+                candidate
+            )
             for document, score in relevant_documents:
                 final_documents.append(document)
 
         # Return all documents in the end
-        print(f'The final documents are: {str([doc.id for doc in final_documents])}')
+        print(f"The final documents are: {str([doc.id for doc in final_documents])}")
         final_string = "\n\n".join([doc.page_content for doc in final_documents])
         return final_string

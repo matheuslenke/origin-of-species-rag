@@ -5,6 +5,7 @@ from core.prompts.pre_retrieval import system_prompt, human_message
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable
 
+
 class PreRetrievalAgent:
     """
     The pre-retrieval agent is responsible for getting the raw user query and try
@@ -14,9 +15,12 @@ class PreRetrievalAgent:
     It uses a Google gemini 2.0 flash lite model, which is a fast and efficient model
     for this kind of task.
     """
+
     def __init__(self):
         gemini_api_key = str(os.environ["GEMINI_API_KEY"])
-        self.model = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=gemini_api_key)
+        self.model = ChatGoogleGenerativeAI(
+            model="gemini-2.0-flash", google_api_key=gemini_api_key
+        )
 
     def get_chain(self) -> Runnable:
         prompt = ChatPromptTemplate.from_messages([system_prompt, human_message])
@@ -27,7 +31,7 @@ class PreRetrievalAgent:
 
         prompt_with_user_query = prompt.format_prompt(user_query=user_query)
         return self.model.invoke(prompt_with_user_query)
-    
+
     def generate_query_stream(self, user_query: str) -> str:
         prompt = ChatPromptTemplate.from_messages([system_prompt, human_message])
 

@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from core.database.vector_store import VectorStore
 
+
 async def prepare_vector_store() -> VectorStore:
     print("Starting Origin of Species RAG application...")
     # Load the environment variables

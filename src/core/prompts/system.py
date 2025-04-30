@@ -9,7 +9,7 @@ system_prompt = {
         Answer: <your answer here>
 
         Please do not repeat the context and question in your answer. Answer with a concise and clear answer.
-        """
+        """,
 }
 
 human_message = {
@@ -18,5 +18,5 @@ human_message = {
         <context> {context} </context>
         <question> {question} </question>
         Answer:
-    """
+    """,
 }

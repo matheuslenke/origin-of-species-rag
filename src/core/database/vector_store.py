@@ -6,20 +6,22 @@ from langchain.vectorstores import VectorStore
 import chromadb
 from langchain.schema import Document
 
+
 class VectorStore:
     """
     Embeddings class for the Origin of Species RAG application.
     """
+
     embeddings: GoogleGenerativeAIEmbeddings
     client: chromadb.Client
     vector_store: Chroma
 
     def embed(self, text: str) -> list[float]:
         return self.embeddings.embed_query(text)
-    
+
     def save_embeddings(self, documents: List[Document]):
         self.vector_store.add_documents(documents=documents)
-    
+
     async def initialize(self):
         self.client = self._initialize_chroma_client()
         self.embeddings = self._initialize_embeedings_model()
@@ -29,18 +31,20 @@ class VectorStore:
         print("Initializing Google Generative AI Embeddings Model...")
         gemini_api_key = str(os.environ["GEMINI_API_KEY"])
 
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-exp-03-07", google_api_key=gemini_api_key)
+        embeddings = GoogleGenerativeAIEmbeddings(
+            model="models/gemini-embedding-exp-03-07", google_api_key=gemini_api_key
+        )
         print("VertexAI Embeddings Model initialized")
         return embeddings
-    
+
     async def _initialize_vector_db(self) -> VectorStore:
         """
         Initializes and returns a vector database using Chroma with Ollama embeddings.
-        
-        This function sets up a vector store that can be used to store and retrieve 
-        document embeddings. It uses the nomic-embed-text model from Ollama for 
+
+        This function sets up a vector store that can be used to store and retrieve
+        document embeddings. It uses the nomic-embed-text model from Ollama for
         generating embeddings and Chroma as the vector database.
-        
+
         Returns:
             VectorStore: A configured Chroma vector store instance ready for use
         """
@@ -49,7 +53,7 @@ class VectorStore:
         vector_store = Chroma(
             collection_name="origin_of_species",
             embedding_function=self.embeddings,
-            client=self.client
+            client=self.client,
         )
         print("Chroma Vector Store initialized")
         return vector_store
@@ -61,9 +65,10 @@ class VectorStore:
 
         return client
 
-
     async def retrieve_similar_documents(self, user_prompt: str):
-        docs: list[tuple[Document, float]] = await self.vector_store.asimilarity_search_with_score(user_prompt, k = 2)
+        docs: list[
+            tuple[Document, float]
+        ] = await self.vector_store.asimilarity_search_with_score(user_prompt, k=2)
 
         for doc, score in docs:
             print(f"Score: {score}")
@@ -74,4 +79,3 @@ class VectorStore:
 
     def retrieve_all_documents(self):
         return self.vector_store.get()
-

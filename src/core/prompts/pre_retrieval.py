@@ -5,12 +5,12 @@ system_prompt = {
         The goal is to maximize the relevance of the retrieved results by focusing on the most important aspects of the user's question.
         Return always two candidates.
         Return them as a comma-separated list.
-        """
+        """,
 }
 
 human_message = {
     "role": "user",
     "content": """
         <user_query> {user_query} </user_query>
-    """
+    """,
 }

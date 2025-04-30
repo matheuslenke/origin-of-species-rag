@@ -4,7 +4,7 @@ system_prompt = {
         Your task is to take chunks of a text that were retrieved from a vector database and
         summarize and organize them in a way that other AI models can understand and use to answer
         the user's question.
-        """
+        """,
 }
 
 human_message = {
@@ -12,5 +12,5 @@ human_message = {
     "content": """
         <user_query> {user_query} </user_query>
         <chunks> {chunks} </chunks>
-    """
+    """,
 }
