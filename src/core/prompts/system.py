@@ -8,7 +8,7 @@ system_prompt = {
         <question> Question here </question>
         Answer: <your answer here>
 
-        Please do not repeat the context and question in your answer.
+        Please do not repeat the context and question in your answer. Answer with a concise and clear answer.
         """
 }
 
