@@ -7,6 +7,8 @@ system_prompt = {
         <context> Context here </context>
         <question> Question here </question>
         Answer: <your answer here>
+
+        Please do not repeat the context and question in your answer.
         """
 }
 

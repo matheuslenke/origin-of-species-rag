@@ -40,13 +40,12 @@ def initialize_streamlit():
 
             Divirta-se explorando a obra prima de Darwin! 🎉
         """)
-    st.session_state.messages = [
-        system_prompt,
-        { "role": "assistant", "content": "Vamos começar a conversar! 👇" }
-    ]
 
     if "messages" not in st.session_state:
-        st.session_state.messages = []
+        st.session_state.messages = [
+            system_prompt,
+            { "role": "assistant", "content": "Vamos começar a conversar! 👇" }
+        ]
 
     # Display chat messages from history on app rerun
     for message in st.session_state.messages:

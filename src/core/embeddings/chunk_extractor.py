@@ -1,5 +1,5 @@
 from typing import List
-from langchain.text_splitter import NLTKTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 
 def extract_chunks(data: str ) -> List[Document]:
@@ -18,11 +18,13 @@ def extract_chunks(data: str ) -> List[Document]:
     Returns:
         List[Document]: A list of Document objects, where each Document contains a chunk of the original text
     """
-    # Create a text splitter (https://www.nltk.org/)
-    # The NLTKTextSplitter is used to split the text into a more natural way,
-    # by splitting on sentences and paragraphs. This is an easy way to split the text
-    # by good quality chunks with not so much processing power.
-    text_splitter = NLTKTextSplitter(language="english", separator="\n\n")
+    # Creates a text splitter
+    text_splitter = RecursiveCharacterTextSplitter(
+        separator="\n\n",
+        chunk_size=500,
+        chunk_overlap=10,
+        is_separator_regex=False
+    )
 
     chunks = text_splitter.split_documents([Document(page_content=data)])
 

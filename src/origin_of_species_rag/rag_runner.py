@@ -30,7 +30,6 @@ class RagRunner:
             } |
             RunnableLambda(self.run_documents_and_original_query)
             | rag_chain
-            | StrOutputParser()
         )
     
     async def run(self, user_query: str) -> str:
@@ -52,7 +51,7 @@ class RagRunner:
     async def run_documents_and_original_query(self, input_dict: dict) -> list[Document]:
         pre_retrieval_output = input_dict["pre_retrieval_output"]
         original_query = input_dict["original_query"]
-        context_string = await self.generate_context(pre_retrieval_output, original_query)
+        context_string: str = await self.generate_context(pre_retrieval_output, original_query)
         return {"documents": context_string, "original_query": original_query}
 
     async def generate_context(self, pre_retrieval_output: str, original_query: str) -> str:
@@ -69,17 +68,16 @@ class RagRunner:
         # Retrieve the relevant documents based on the original query
         relevant_documents = await self.vector_store.retrieve_similar_documents(original_query)
         final_documents: list[Document] = []
-        for document in relevant_documents:
-            final_documents.extend(document)
-            final_documents.extend("\n\n")
+        for document, score in relevant_documents:
+            final_documents.append(document)
 
         # Retrieve the relevant documents based on the candidates
         for candidate in candidates:
-            final_documents.extend("\n\n")
             relevant_documents = await self.vector_store.retrieve_similar_documents(candidate)
-            for document in relevant_documents:
-                final_documents.extend(document)
-                final_documents.extend("\n\n")
+            for document, score in relevant_documents:
+                final_documents.append(document)
 
         # Return all documents in the end
-        return final_documents
+        print(f'The final documents are: {str([doc.id for doc in final_documents])}')
+        final_string = "\n\n".join([doc.page_content for doc in final_documents])
+        return final_string
