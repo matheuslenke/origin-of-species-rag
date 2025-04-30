@@ -20,8 +20,7 @@ def extract_chunks(data: str) -> List[Document]:
         List[Document]: A list of Document objects, where each Document contains a chunk of the original text
     """
     # Creates a text splitter
-    text_splitter = RecursiveCharacterTextSplitter(
-        separator="\n\n", chunk_size=500, chunk_overlap=10, is_separator_regex=False
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=10, is_separator_regex=False
     )
 
     chunks = text_splitter.split_documents([Document(page_content=data)])

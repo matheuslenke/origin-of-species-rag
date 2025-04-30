@@ -17,10 +17,11 @@ async def transform_file_and_save_embeddings(vector_store: VectorStore):
     )
 
     for doc in documents:
+        print(f"Saving document: {doc.id}")
         vector_store.save_embeddings(documents=[doc])
         sleep(
             5
         )  # The sleep is necessary due to the rate limit of the Gemini API free tier.
-
+    print("Documents saved")
     saved_documents = vector_store.retrieve_all_documents()
     print(f"{len(saved_documents)} documents retrieved from vector store")
