@@ -56,33 +56,15 @@ class VectorStore:
 
     def _initialize_chroma_client(self):
         print("Initializing Chroma Client...")
-        chroma_host = os.environ["CHROMA_DB_HOST"]
-        chroma_port: int = int(os.environ["CHROMA_DB_PORT"])
-        environment = os.environ["ENVIRONMENT"]
-        ssl_option = environment == "production"
 
         client = chromadb.PersistentClient(path="./chroma_db")
 
-        # is_server_running = client.heartbeat()
-
-        # print(client.count_collections())
-
-        # if not is_server_running:
-        #     raise Exception("Chroma server is not running")
-        # else:
-        #     print("Chroma server is running on port", chroma_port)
-
-        # collection_exists = await client.get_or_create_collection("origin_of_species")
-        # print("Collection exists:", await collection_exists.count())
         return client
 
 
     async def retrieve_similar_documents(self, user_prompt: str):
-        # creating and invoking the retriever
-
         docs: list[tuple[Document, float]] = await self.vector_store.asimilarity_search_with_score(user_prompt, k = 2)
 
-        # docs = retriever.invoke(user_prompt)
         for doc, score in docs:
             print(f"Score: {score}")
             print(f"Content: {doc.page_content}")
