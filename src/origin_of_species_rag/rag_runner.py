@@ -3,7 +3,6 @@ from models.pre_retrieval_agent import PreRetrievalAgent
 from langchain.schema import Document
 from core.database.vector_store import VectorStore
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
-from langchain_core.output_parsers import StrOutputParser
 
 
 class RagRunner:
